@@ -4,6 +4,12 @@ use starknet::get_caller_address;
 use starknet::storage::LegacyMap;
 use core::integer::u256;
 
+#[derive(Copy, Drop, Serde, PartialEq, Eq)]
+struct U256 {
+    low: u128,
+    high: u128,
+}
+
 #[starknet::contract]
 mod MockERC20 {
     #[storage]
