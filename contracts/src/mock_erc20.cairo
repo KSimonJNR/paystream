@@ -4,14 +4,12 @@ use starknet::get_caller_address;
 use starknet::storage::LegacyMap;
 use openzeppelin::utils::uint256::{Uint256, uint256_add, uint256_sub, uint256_ge};
 
-#[derive(Copy, Drop, Serde, PartialEq, Eq)]
-struct U256 {
-    low: u128,
-    high: u128,
-}
-
 #[starknet::contract]
 mod MockERC20 {
+    use starknet::ContractAddress;
+    use starknet::get_caller_address;
+    use starknet::storage::LegacyMap;
+    use openzeppelin::utils::uint256::{Uint256, uint256_add, uint256_sub, uint256_ge};
     #[storage]
     struct Storage {
     balances: LegacyMap<ContractAddress, Uint256>,
@@ -46,8 +44,8 @@ mod MockERC20 {
     fn transfer_from(ref self: ContractState, from: ContractAddress, to: ContractAddress, amount: Uint256) {
         let spender = get_caller_address();
         let allowance = self.allowances.read((from, spender));
-        assert(u256_ge(allowance, amount), 'allowance');
-        self.allowances.write((from, spender), u256_sub(allowance, amount));
+        assert(uint256_ge(allowance, amount), 'allowance');
+        self.allowances.write((from, spender), uint256_sub(allowance, amount));
         _transfer(self, from, to, amount);
     }
 
