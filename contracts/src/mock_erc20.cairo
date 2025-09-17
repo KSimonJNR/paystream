@@ -1,4 +1,7 @@
-// Minimal ERC20 mock for testing
+# Install StarkNet Foundry (includes sncast)
+curl -L https://foundry-rs.github.io/starknet-foundry/install | bash
+export PATH="$HOME/.starknet-foundry/bin:$PATH"
+sncast --help// Minimal ERC20 mock for testing
 use starknet::ContractAddress;
 use starknet::get_caller_address;
 use starknet::storage::LegacyMap;

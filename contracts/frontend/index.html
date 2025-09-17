@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Paystream Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/starknet@5.17.0/dist/browser/index.min.js"></script>
+  <script defer src="app.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+    input, button { margin: 0.5em 0; }
+    .section { margin-bottom: 2em; }
+  </style>
+</head>
+<body>
+  <h1>Paystream Demo (StarkNet Sepolia)</h1>
+  <div class="section">
+    <button id="connect">Connect Argent X</button>
+    <div id="account"></div>
+    <div id="notification" style="color: #fff; background: #333; padding: 0.5em 1em; border-radius: 4px; display: none; margin-top: 1em;"></div>
+  </div>
+  <div class="section">
+    <h2>Create Stream</h2>
+    <input id="recipient" placeholder="Recipient address" size="66"><br>
+    <input id="deposit" placeholder="Deposit (wei)" type="number"><br>
+    <input id="start" placeholder="Start time (unix seconds)" type="number"><br>
+    <input id="stop" placeholder="Stop time (unix seconds)" type="number"><br>
+    <input id="token" placeholder="Token address" size="66"><br>
+    <button id="create">Create Stream</button>
+    <span id="createLoading" style="display:none;">⏳</span>
+    <div id="createResult"></div>
+  </div>
+  <div class="section">
+    <h2>Withdraw</h2>
+    <input id="streamIdW" placeholder="Stream ID"><br>
+    <input id="amountW" placeholder="Amount (wei)" type="number"><br>
+    <button id="withdraw">Withdraw</button>
+    <span id="withdrawLoading" style="display:none;">⏳</span>
+    <div id="withdrawResult"></div>
+  </div>
+  <div class="section">
+    <h2>Check Balance</h2>
+    <input id="streamIdB" placeholder="Stream ID"><br>
+    <input id="userB" placeholder="User address" size="66"><br>
+    <button id="balance">Check Balance</button>
+    <span id="balanceLoading" style="display:none;">⏳</span>
+    <div id="balanceResult"></div>
+  </div>
+</body>
+</html>

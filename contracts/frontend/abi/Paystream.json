@@ -1,0 +1,4 @@
+{
+  "abi": []
+  // Replace this with the actual ABI from target/dev/paystream_Paystream.sierra.json after build
+}

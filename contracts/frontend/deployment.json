@@ -1,0 +1,4 @@
+{
+  "paystream": "<YOUR_PAYSTREAM_CONTRACT_ADDRESS>",
+  "mock_erc20": "<YOUR_MOCK_ERC20_CONTRACT_ADDRESS>"
+}

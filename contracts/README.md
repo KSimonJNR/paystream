@@ -31,6 +31,26 @@ chmod +x deploy.sh
 ```
 This will deploy both contracts and write their addresses to `deployment.json`.
 
+## 3. Deploy to StarkNet Sepolia (sncast, recommended)
+You need a funded StarkNet account created with sncast (Starknet Foundry):
+
+```bash
+# 1. Install sncast (if not already)
+curl -L https://foundry-rs.github.io/starknet-foundry/install | bash
+export PATH="$HOME/.starknet-foundry/bin:$PATH"
+
+# 2. Create a keystore and account
+sncast keystore new keystore.json
+sncast --url https://rpc.sepolia.starknet.org --accounts-file accounts.json --keystore keystore.json account create --name myaccount
+# Fund the printed address using a Sepolia faucet, then:
+sncast --url https://rpc.sepolia.starknet.org --accounts-file accounts.json --keystore keystore.json account deploy --name myaccount
+
+# 3. Deploy contracts (from contracts/ directory)
+chmod +x deploy_sncast.sh
+./deploy_sncast.sh myaccount accounts.json keystore.json https://rpc.sepolia.starknet.org
+```
+This will deploy both contracts and write their addresses to `deployment.json`.
+
 ## 4. Frontend ABI export
 After build, ABIs are in `target/dev/*.sierra.json`.
 Use `paystream_Paystream.sierra.json` and `mock_erc20_MockERC20.sierra.json` for your frontend.

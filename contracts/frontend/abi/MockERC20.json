@@ -1,0 +1,4 @@
+{
+  "abi": []
+  // Replace this with the actual ABI from target/dev/mock_erc20_MockERC20.sierra.json after build
+}
