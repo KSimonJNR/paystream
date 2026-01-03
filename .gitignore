@@ -1,0 +1,17 @@
+# Build artifacts
+target/
+contracts/target/
+
+# Cairo/Scarb
+contracts/Scarb.lock
+.snfoundry_cache/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

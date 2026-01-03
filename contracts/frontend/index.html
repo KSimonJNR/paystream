@@ -2,48 +2,324 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Paystream Demo</title>
+  <title>Paystream Console</title>
   <script src="https://cdn.jsdelivr.net/npm/starknet@5.17.0/dist/browser/index.min.js"></script>
   <script defer src="app.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
-    input, button { margin: 0.5em 0; }
-    .section { margin-bottom: 2em; }
+    :root {
+      --bg: #0b1726;
+      --panel: rgba(255, 255, 255, 0.04);
+      --panel-strong: rgba(255, 255, 255, 0.08);
+      --text: #e8edf7;
+      --muted: #9fb2c6;
+      --accent: #0ea5a0;
+      --accent-strong: #0f766e;
+      --warning: #f97316;
+      --error: #f43f5e;
+      --success: #22c55e;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #16324a, transparent 35%),
+                  radial-gradient(circle at 80% 10%, #0f3f46, transparent 35%),
+                  linear-gradient(140deg, #0b1726 0%, #0c1e30 60%, #0c2135 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 48px 24px 56px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.5px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .pill.accent { border-color: rgba(14, 165, 160, 0.5); color: #b8fffb; }
+    .pill.muted { color: var(--muted); }
+
+    .cta {
+      background: linear-gradient(135deg, var(--accent) 0%, #38bdf8 100%);
+      color: #04141f;
+      font-weight: 600;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(14, 165, 160, 0.25);
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    .cta:hover { transform: translateY(-1px); box-shadow: 0 16px 36px rgba(14, 165, 160, 0.32); }
+    .cta:active { transform: translateY(0); }
+    .cta[disabled] { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(12px);
+      transition: border 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover { border-color: rgba(14, 165, 160, 0.5); transform: translateY(-2px); }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    .hint {
+      margin: 0 0 14px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(14, 165, 160, 0.8);
+      box-shadow: 0 0 0 3px rgba(14, 165, 160, 0.18);
+    }
+
+    .stack { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+
+    .ghost {
+      background: var(--panel-strong);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: border 0.2s ease, transform 0.1s ease;
+    }
+    .ghost:hover { border-color: rgba(14, 165, 160, 0.5); transform: translateY(-1px); }
+    .ghost:active { transform: translateY(0); }
+
+    .result {
+      margin-top: 12px;
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #cfe9ff;
+      min-height: 20px;
+      word-break: break-all;
+    }
+
+    .notification {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: #04141f;
+      font-weight: 600;
+      display: none;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+    .note-success { background: #bbf7d0; }
+    .note-error { background: #fecdd3; }
+    .note-info { background: #bae6fd; }
+
+    @media (max-width: 640px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .status-bar { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <h1>Paystream Demo (StarkNet Sepolia)</h1>
-  <div class="section">
-    <button id="connect">Connect Argent X</button>
-    <div id="account"></div>
-    <div id="notification" style="color: #fff; background: #333; padding: 0.5em 1em; border-radius: 4px; display: none; margin-top: 1em;"></div>
-  </div>
-  <div class="section">
-    <h2>Create Stream</h2>
-    <input id="recipient" placeholder="Recipient address" size="66"><br>
-    <input id="deposit" placeholder="Deposit (wei)" type="number"><br>
-    <input id="start" placeholder="Start time (unix seconds)" type="number"><br>
-    <input id="stop" placeholder="Stop time (unix seconds)" type="number"><br>
-    <input id="token" placeholder="Token address" size="66"><br>
-    <button id="create">Create Stream</button>
-    <span id="createLoading" style="display:none;">⏳</span>
-    <div id="createResult"></div>
-  </div>
-  <div class="section">
-    <h2>Withdraw</h2>
-    <input id="streamIdW" placeholder="Stream ID"><br>
-    <input id="amountW" placeholder="Amount (wei)" type="number"><br>
-    <button id="withdraw">Withdraw</button>
-    <span id="withdrawLoading" style="display:none;">⏳</span>
-    <div id="withdrawResult"></div>
-  </div>
-  <div class="section">
-    <h2>Check Balance</h2>
-    <input id="streamIdB" placeholder="Stream ID"><br>
-    <input id="userB" placeholder="User address" size="66"><br>
-    <button id="balance">Check Balance</button>
-    <span id="balanceLoading" style="display:none;">⏳</span>
-    <div id="balanceResult"></div>
+  <div class="page">
+    <header>
+      <div class="title">
+        <div class="eyebrow">StarkNet Sepolia</div>
+        <h1>Paystream Control Room</h1>
+        <p class="hint" style="margin:0;">Create, withdraw, and audit payment streams with live wallet feedback.</p>
+      </div>
+      <button id="connect" class="cta">Connect Argent X</button>
+    </header>
+
+    <div class="status-bar">
+      <span class="pill accent" id="account">Not connected</span>
+      <span class="pill muted" id="contract">Contract: —</span>
+      <span class="pill muted" id="network">Network: auto</span>
+    </div>
+
+    <div class="grid" style="margin-top: 18px;">
+      <section class="card">
+        <h2>Create Stream</h2>
+        <p class="hint">Fund a continuous stream. Start/stop default to now + 1 minute and + 1 hour.</p>
+        <label for="recipient">Recipient address</label>
+        <input id="recipient" placeholder="0x..." autocomplete="off">
+
+        <label for="deposit">Deposit (supports decimals, 18dp)</label>
+        <input id="deposit" placeholder="1.5" type="text" inputmode="decimal" autocomplete="off">
+
+        <div class="stack">
+          <div style="flex:1; min-width:140px;">
+            <label for="start">Start time (unix sec)</label>
+            <input id="start" type="number" min="0">
+          </div>
+          <div style="flex:1; min-width:140px;">
+            <label for="stop">Stop time (unix sec)</label>
+            <input id="stop" type="number" min="0">
+          </div>
+        </div>
+
+        <label for="token">Token address</label>
+        <input id="token" placeholder="0x..." autocomplete="off">
+
+        <div class="stack">
+          <button id="create" class="cta" style="padding: 11px 16px;">Create Stream</button>
+          <button id="fillMock" class="ghost" type="button">Use mock token</button>
+          <span id="createLoading" style="display:none; color: var(--muted);">Working…</span>
+        </div>
+        <div id="createResult" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Approve Token</h2>
+        <p class="hint">Allow the Paystream contract to pull funds from your ERC-20.</p>
+        <label for="approveToken">Token address</label>
+        <input id="approveToken" placeholder="0x..." autocomplete="off">
+
+        <label for="approveAmount">Amount (supports decimals, 18dp)</label>
+        <input id="approveAmount" placeholder="5" type="text" inputmode="decimal" autocomplete="off">
+
+        <div class="stack">
+          <button id="approve" class="cta" style="padding: 11px 16px;">Approve</button>
+          <button id="approveFillMock" class="ghost" type="button">Use mock token</button>
+          <span id="approveLoading" style="display:none; color: var(--muted);">Working…</span>
+        </div>
+        <div id="approveResult" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Withdraw</h2>
+        <p class="hint">Claim funds that have vested for a given stream.</p>
+        <label for="streamIdW">Stream ID</label>
+        <input id="streamIdW" placeholder="1">
+
+        <label for="amountW">Amount (supports decimals, 18dp)</label>
+        <input id="amountW" placeholder="0.25" type="text" inputmode="decimal" autocomplete="off">
+
+        <div class="stack">
+          <button id="withdraw" class="cta" style="padding: 11px 16px;">Withdraw</button>
+          <span id="withdrawLoading" style="display:none; color: var(--muted);">Working…</span>
+        </div>
+        <div id="withdrawResult" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Check Balance</h2>
+        <p class="hint">Inspect how much a user can withdraw from a stream.</p>
+        <label for="streamIdB">Stream ID</label>
+        <input id="streamIdB" placeholder="1">
+
+        <label for="userB">User address</label>
+        <input id="userB" placeholder="0x...">
+
+        <div class="stack">
+          <button id="balance" class="cta" style="padding: 11px 16px;">Check Balance</button>
+          <span id="balanceLoading" style="display:none; color: var(--muted);">Working…</span>
+        </div>
+        <div id="balanceResult" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Cancel Stream</h2>
+        <p class="hint">Stop a stream and reclaim remaining balance.</p>
+        <label for="streamIdC">Stream ID</label>
+        <input id="streamIdC" placeholder="1">
+        <div class="stack">
+          <button id="cancel" class="ghost" style="padding: 11px 16px;">Cancel Stream</button>
+          <span id="cancelLoading" style="display:none; color: var(--muted);">Working…</span>
+        </div>
+        <div id="cancelResult" class="result"></div>
+      </section>
+    </div>
+
+    <div id="notification" class="notification note-info"></div>
   </div>
 </body>
 </html>
